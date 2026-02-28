@@ -1,0 +1,47 @@
+version: "3.8"
+
+services:
+  # ── Ollama (AMD GPU via ROCm) ──────────────────
+  ollama:
+    image: ollama/ollama:rocm
+    container_name: repodocai-ollama
+    ports:
+      - "11434:11434"
+    volumes:
+      - ollama_data:/root/.ollama
+    devices:
+      - /dev/kfd
+      - /dev/dri
+    environment:
+      - HSA_OVERRIDE_GFX_VERSION=10.3.0  # Adjust for your AMD GPU
+    restart: unless-stopped
+
+  # ── Backend (FastAPI) ──────────────────────────
+  backend:
+    build: ./backend
+    container_name: repodocai-backend
+    ports:
+      - "8000:8000"
+    environment:
+      - LLM_PROVIDER=ollama
+      - OLLAMA_BASE_URL=http://ollama:11434
+      - OLLAMA_MODEL=aseio8886/aseio-deepseek-coder6.7b
+      - AMD_GPU_ENABLED=true
+    depends_on:
+      - ollama
+    restart: unless-stopped
+
+  # ── Frontend (Next.js) ─────────────────────────
+  frontend:
+    build: ./frontend
+    container_name: repodocai-frontend
+    ports:
+      - "3000:3000"
+    environment:
+      - NEXT_PUBLIC_API_URL=http://backend:8000
+    depends_on:
+      - backend
+    restart: unless-stopped
+
+volumes:
+  ollama_data:

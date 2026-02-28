@@ -1,0 +1,187 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --amd-red: #ED1C24;
+  --amd-dark: #1A1A2E;
+  --amd-gray: #16213E;
+  --amd-accent: #0F3460;
+}
+
+body {
+  background: #0a0a1a;
+  color: #e5e7eb;
+  overflow-x: hidden;
+}
+
+/* Transparent gradient — lets starfield show through */
+.bg-gradient-amd {
+  background: transparent;
+}
+
+/* Glowing border */
+.glow-border {
+  box-shadow: 0 0 15px rgba(237, 28, 36, 0.3), 0 0 30px rgba(237, 28, 36, 0.1);
+}
+
+.glow-border:hover {
+  box-shadow: 0 0 20px rgba(237, 28, 36, 0.5), 0 0 40px rgba(237, 28, 36, 0.2);
+}
+
+/* Scrollbar */
+::-webkit-scrollbar {
+  width: 8px;
+}
+::-webkit-scrollbar-track {
+  background: #1a1a2e;
+}
+::-webkit-scrollbar-thumb {
+  background: #0f3460;
+  border-radius: 4px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #ED1C24;
+}
+
+/* Mermaid diagram container */
+.mermaid-container svg {
+  max-width: 100%;
+  height: auto;
+}
+
+/* Prose styles for markdown */
+.doc-content h1 { font-size: 2rem; font-weight: 700; margin-top: 2rem; margin-bottom: 1rem; color: #f9fafb; }
+.doc-content h2 { font-size: 1.5rem; font-weight: 600; margin-top: 1.75rem; margin-bottom: 0.75rem; color: #f3f4f6; border-bottom: 1px solid #374151; padding-bottom: 0.5rem; }
+.doc-content h3 { font-size: 1.25rem; font-weight: 600; margin-top: 1.5rem; margin-bottom: 0.5rem; color: #e5e7eb; }
+.doc-content p { margin-bottom: 1rem; line-height: 1.75; color: #d1d5db; }
+.doc-content ul, .doc-content ol { margin-bottom: 1rem; padding-left: 1.5rem; }
+.doc-content li { margin-bottom: 0.25rem; color: #d1d5db; }
+.doc-content code { background: #1f2937; padding: 0.125rem 0.375rem; border-radius: 0.25rem; font-size: 0.875rem; color: #f87171; }
+.doc-content pre { background: #111827; padding: 1rem; border-radius: 0.5rem; overflow-x: auto; margin-bottom: 1rem; }
+.doc-content pre code { background: none; padding: 0; color: #e5e7eb; }
+.doc-content a { color: #60a5fa; text-decoration: underline; }
+.doc-content blockquote { border-left: 4px solid #ED1C24; padding-left: 1rem; color: #9ca3af; margin-bottom: 1rem; }
+.doc-content table { width: 100%; border-collapse: collapse; margin-bottom: 1rem; }
+.doc-content th, .doc-content td { border: 1px solid #374151; padding: 0.5rem 0.75rem; text-align: left; }
+.doc-content th { background: #1f2937; font-weight: 600; }
+
+/* ══════════════════════════════════════════
+   CRAZY ANIMATIONS & EFFECTS
+   ══════════════════════════════════════════ */
+
+/* Neon glow text */
+.neon-text {
+  text-shadow:
+    0 0 7px rgba(237, 28, 36, 0.6),
+    0 0 10px rgba(237, 28, 36, 0.4),
+    0 0 21px rgba(237, 28, 36, 0.3),
+    0 0 42px rgba(237, 28, 36, 0.2);
+}
+
+/* Glass card effect */
+.glass-card {
+  background: rgba(255, 255, 255, 0.03);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+/* Floating animation */
+@keyframes float {
+  0%, 100% { transform: translateY(0px); }
+  50% { transform: translateY(-10px); }
+}
+.animate-float { animation: float 3s ease-in-out infinite; }
+
+/* Gradient border animation */
+@keyframes gradient-border {
+  0% { border-color: #ED1C24; }
+  33% { border-color: #ff6b35; }
+  66% { border-color: #ff4081; }
+  100% { border-color: #ED1C24; }
+}
+.animate-gradient-border {
+  animation: gradient-border 3s ease infinite;
+}
+
+/* Pulse glow ring */
+@keyframes pulse-glow {
+  0%, 100% { box-shadow: 0 0 5px rgba(237,28,36,0.2), 0 0 20px rgba(237,28,36,0.1); }
+  50% { box-shadow: 0 0 15px rgba(237,28,36,0.5), 0 0 40px rgba(237,28,36,0.2); }
+}
+.animate-pulse-glow { animation: pulse-glow 2s ease-in-out infinite; }
+
+/* Score counter animation */
+@keyframes count-up {
+  from { opacity: 0; transform: scale(0.5); }
+  to { opacity: 1; transform: scale(1); }
+}
+.animate-count-up { animation: count-up 0.8s cubic-bezier(0.34, 1.56, 0.64, 1); }
+
+/* Shimmer effect for loading states */
+@keyframes shimmer {
+  0% { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
+}
+.animate-shimmer {
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.05), transparent);
+  background-size: 200% 100%;
+  animation: shimmer 2s infinite;
+}
+
+/* Typewriter cursor blink */
+@keyframes blink-cursor {
+  0%, 100% { border-right-color: #ED1C24; }
+  50% { border-right-color: transparent; }
+}
+.typewriter-cursor {
+  border-right: 3px solid #ED1C24;
+  animation: blink-cursor 1s step-end infinite;
+}
+
+/* Tab underline slide */
+@keyframes tab-slide {
+  from { width: 0; }
+  to { width: 100%; }
+}
+.tab-active::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  height: 2px;
+  background: #ED1C24;
+  animation: tab-slide 0.3s ease-out forwards;
+}
+
+/* Matrix rain effect (for code review bg) */
+@keyframes matrix-fall {
+  0% { transform: translateY(-100%); opacity: 1; }
+  100% { transform: translateY(100vh); opacity: 0; }
+}
+
+/* Scanning line */
+@keyframes scan-line {
+  0% { top: -2px; }
+  100% { top: 100%; }
+}
+.scan-effect::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  width: 100%;
+  height: 2px;
+  background: linear-gradient(90deg, transparent, #ED1C24, transparent);
+  animation: scan-line 3s linear infinite;
+  pointer-events: none;
+}
+
+/* Particle hover */
+.hover-lift {
+  transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+.hover-lift:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.3);
+}

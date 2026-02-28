@@ -1,0 +1,21 @@
+version: "3.8"
+
+# Docker Compose for LOCAL DEVELOPMENT (no Docker builds, runs natively)
+# Use docker-compose.yml for production/deployment
+
+services:
+  ollama:
+    image: ollama/ollama:rocm
+    container_name: repodocai-ollama-dev
+    ports:
+      - "11434:11434"
+    volumes:
+      - ollama_data:/root/.ollama
+    devices:
+      - /dev/kfd
+      - /dev/dri
+    environment:
+      - HSA_OVERRIDE_GFX_VERSION=10.3.0
+
+volumes:
+  ollama_data:
