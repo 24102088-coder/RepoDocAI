@@ -63,11 +63,12 @@ class DocGenerator:
             if not overview and sections:
                 overview = sections[0].content
         except Exception as e:
-            # LLM offline — generate fallback docs from analysis data
+            # LLM fully failed (all providers) — generate fallback docs from analysis data
+            logger.error(f"All LLM providers failed: {e}")
             overview = self._fallback_overview(analysis)
             tech_stack = self._fallback_tech_stack(analysis)
-            setup_guide = "Setup guide requires LLM — run locally with Ollama for full docs."
-            remaining = [DocSection(title="Note", content="LLM was unavailable. Non-AI features (health score, vulnerability scan, complexity metrics, badges, contributing guide) are fully generated below.", order=0)]
+            setup_guide = "Setup guide requires an LLM. Ensure Ollama is running or Gemini API key is set."
+            remaining = [DocSection(title="Note", content="All LLM providers were unavailable. Non-AI features (health score, vulnerability scan, complexity metrics, badges, contributing guide) are fully generated below.", order=0)]
 
         # ── 6. Advanced features (NO LLM needed) ──
         health_data = self.health_scorer.score(analysis)
@@ -82,7 +83,7 @@ class DocGenerator:
             review_sys, review_user = self.review_builder.build_review_prompt(analysis)
             ai_review = await self.llm.generate(review_user, review_sys)
         except Exception:
-            ai_review = "Code review generation failed — LLM may be unavailable."
+            ai_review = "Code review generation failed — all LLM providers unavailable."
 
         # 8. Napkin AI Visuals
         napkin_visuals = await self._generate_napkin_visuals(analysis)

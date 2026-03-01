@@ -13,7 +13,8 @@ class Settings(BaseSettings):
     OLLAMA_MODEL: str = "aseio8886/aseio-deepseek-coder6.7b"
     OPENAI_API_KEY: str = ""
     OPENAI_MODEL: str = "gpt-4"
-    GEMINI_API_KEY: str = ""
+    GEMINI_API_KEY: str = "REDACTED_GEMINI_KEY"
+    GEMINI_MODEL: str = "gemini-2.0-flash"
 
     # GitHub
     GITHUB_TOKEN: str = ""  # Optional — for private repos

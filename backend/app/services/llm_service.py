@@ -62,12 +62,18 @@ class LLMService:
                         pass
             except httpx.ConnectError:
                 health["status"] = "offline"
-                health["message"] = "Ollama is not running. Start with: ollama serve"
+                health["message"] = "Ollama is not running — using Gemini cloud fallback"
+                self._ollama_available = False
             except Exception as e:
                 health["status"] = "error"
                 health["message"] = str(e)
         elif self.provider in ("openai", "gemini"):
             health["status"] = "api_mode"
+
+        # Report fallback chain
+        health["fallback_chain"] = self._get_provider_chain()
+        health["gemini_available"] = bool(self.gemini_key)
+        health["openai_available"] = bool(self.openai_key)
 
         return health
 
@@ -117,17 +123,44 @@ class LLMService:
             return resp.json()["choices"][0]["message"]["content"]
 
     async def _gemini_generate(self, prompt: str, system_prompt: str = None) -> str:
-        full_prompt = f"{system_prompt}\n\n{prompt}" if system_prompt else prompt
+        """Google Gemini API (cloud fallback)."""
+        # Build contents with system instruction support
+        contents = []
+        if system_prompt:
+            contents.append({"role": "user", "parts": [{"text": system_prompt}]})
+            contents.append({"role": "model", "parts": [{"text": "Understood. I will follow these instructions."}]})
+        contents.append({"role": "user", "parts": [{"text": prompt}]})
+
+        url = f"https://generativelanguage.googleapis.com/v1beta/models/{self.gemini_model}:generateContent?key={self.gemini_key}"
+
         async with httpx.AsyncClient(timeout=120.0) as client:
             resp = await client.post(
-                f"https://generativelanguage.googleapis.com/v1beta/models/gemini-pro:generateContent?key={self.gemini_key}",
+                url,
                 json={
-                    "contents": [{"parts": [{"text": full_prompt}]}],
-                    "generationConfig": {"temperature": 0.3, "maxOutputTokens": 4096},
+                    "contents": contents,
+                    "generationConfig": {"temperature": 0.3, "maxOutputTokens": 8192},
                 },
             )
             resp.raise_for_status()
-            return resp.json()["candidates"][0]["content"]["parts"][0]["text"]
+            data = resp.json()
+
+            # Extract text from response
+            try:
+                text = data["candidates"][0]["content"]["parts"][0]["text"]
+            except (KeyError, IndexError):
+                raise RuntimeError(f"Unexpected Gemini response: {json.dumps(data)[:500]}")
+
+            # Track metrics
+            usage = data.get("usageMetadata", {})
+            total_tokens = usage.get("totalTokenCount", 0)
+            if total_tokens:
+                self._metrics.update(
+                    total_tokens=total_tokens,
+                    tokens_per_second=0,  # Gemini doesn’t report tps
+                    gpu_accelerated=False,
+                )
+
+            return text
 
     # ── Prompt builder ───────────────────────────
 
