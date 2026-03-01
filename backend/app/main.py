@@ -55,19 +55,13 @@ if STATIC_DIR.exists():
         app.mount("/assets", StaticFiles(directory=str(assets_dir)), name="assets")
 
 
-# SPA catch-all — serve index.html for frontend routes (must be LAST)
-@app.get("/generate/{rest_of_path:path}")
-async def spa_generate(rest_of_path: str):
-    """Serve the SPA page for /generate/[taskId] routes."""
-    # Try the exact static page first
-    static_page = STATIC_DIR / "generate" / rest_of_path / "index.html"
-    if static_page.exists():
-        return FileResponse(static_page)
-    # Fallback: serve the generate catch-all page
-    fallback = STATIC_DIR / "generate" / "[taskId]" / "index.html"
-    if fallback.exists():
-        return FileResponse(fallback)
-    # Last resort: main index
+# SPA catch-all — serve generate page for /generate?taskId=... (must be LAST)
+@app.get("/generate")
+async def spa_generate(request: Request):
+    """Serve the static /generate page (uses query params for taskId)."""
+    page = STATIC_DIR / "generate" / "index.html"
+    if page.exists():
+        return FileResponse(page)
     index = STATIC_DIR / "index.html"
     if index.exists():
         return FileResponse(index)
